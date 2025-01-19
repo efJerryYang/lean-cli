@@ -399,7 +399,16 @@ class LeanRunner:
             self.mount_project_and_library_directories(project_dir, run_options)
 
         # 3
-        run_options["volumes"][str(data_dir)] = {"bind": "/Lean/Data", "mode": "rw"}
+        # try to use the internal volume `local_data_vol` if it exists
+        local_data_volume = self._docker_manager.try_get_local_data_volume()
+        if local_data_volume:
+            # mnt the internal volume at a separate target /Lean/DataVolume
+            run_options["volumes"][local_data_volume] = {"bind": "/Lean/DataVolume", "mode": "rw"}
+            # point the data-folder to the new target
+            lean_config["data-folder"] = "/Lean/DataVolume"
+        else:
+            # fallback to the default data folder
+            run_options["volumes"][str(data_dir)] = {"bind": "/Lean/Data", "mode": "rw"}
 
         # 4
         if output_dir:

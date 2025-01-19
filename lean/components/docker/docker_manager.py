@@ -634,3 +634,29 @@ class DockerManager:
             return container.ports[internal_port][0]["HostPort"]
 
         return None
+
+    def get_volume_by_name(self, name: str) -> Optional[Any]:
+        """
+        Returns a volume by name
+        :param name: Name of the volume
+        :return: The volume that is linked to it, or None if it does not exist
+        """
+
+        docker_client = self._get_docker_client()
+        volumes = docker_client.volumes.list()
+        for volume in volumes:
+            if volume.name == name:
+                return volume
+        return None
+
+    def try_get_local_data_volume(self) -> Optional[str]:
+        """
+        Checks for existence of the 'local_data_vol' volume.
+        :return: The volume name if found; otherwise, logs a warning and returns None.
+        """
+        volume = self.get_volume_by_name("local_data_vol")
+        if volume is None:
+            self._logger.warn("Local data volume 'local_data_vol' not found. Using slower host-mounted data access.")
+            return None
+        return "local_data_vol"
+
