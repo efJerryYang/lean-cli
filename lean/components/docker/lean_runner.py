@@ -405,10 +405,9 @@ class LeanRunner:
             # mnt the internal volume at a separate target /Lean/DataVolume
             run_options["volumes"][local_data_volume] = {"bind": "/Lean/DataVolume", "mode": "rw"}
             # point the data-folder to the new target
-            lean_config["data-folder"] = "/Lean/DataVolume"
-        else:
-            # fallback to the default data folder
-            run_options["volumes"][str(data_dir)] = {"bind": "/Lean/Data", "mode": "rw"}
+            lean_config["fast-data-folder"] = "/Lean/DataVolume"
+        # keep the default data folder
+        run_options["volumes"][str(data_dir)] = {"bind": "/Lean/Data", "mode": "rw"}
 
         # 4
         if output_dir:
