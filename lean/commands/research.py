@@ -75,6 +75,9 @@ def _check_docker_output(chunk: str, port: int) -> None:
               is_flag=True,
               default=False,
               help="Use the local LEAN research image instead of pulling the latest version")
+@option("--backtest-local-dir",
+        type=str, 
+        help="Mount a local backtest project directory into the research container")
 def research(project: Path,
              port: int,
              data_provider_historical: Optional[str],
@@ -84,6 +87,7 @@ def research(project: Path,
              no_open: bool,
              image: Optional[str],
              update: bool,
+             backtest_local_dir: Optional[str],
              extra_config: Optional[Tuple[str, str]],
              extra_docker_config: Optional[str],
              no_update: bool,
@@ -171,6 +175,12 @@ def research(project: Path,
         "bind": f"{LEAN_ROOT_PATH}/Notebooks",
         "mode": "rw"
     }
+    # Mount the backtest project directory to the research container if specified
+    if backtest_local_dir is not None:
+        run_options["volumes"][str(backtest_local_dir)] = {
+            "bind": f"/Lean/BacktestLocal",
+            "mode": "rw"
+        }
 
     # Allow notebooks to be embedded in iframes
     run_options["commands"].append("mkdir -p ~/.jupyter")
