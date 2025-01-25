@@ -153,12 +153,16 @@ class DockerManager:
         if detach and "remove" not in kwargs:
             kwargs["remove"] = True
 
-        # Make sure host.docker.internal resolves on Linux
-        # See https://github.com/QuantConnect/Lean/pull/5092
+        if "extra_hosts" not in kwargs:
+            kwargs["extra_hosts"] = {}
         if self._platform_manager.is_host_linux():
-            if "extra_hosts" not in kwargs:
-                kwargs["extra_hosts"] = {}
+            # Make sure host.docker.internal resolves on Linux
+            # See https://github.com/QuantConnect/Lean/pull/5092
             kwargs["extra_hosts"]["host.docker.internal"] = "172.17.0.1"
+        else:
+            # as long as not linux, we set host-gateway, this should have been handled internally by Docker Desktop
+            # but when using colima, it doesn't work
+            kwargs["extra_hosts"]["host.docker.internal"] = "host-gateway"
 
         # Run all containers on a custom bridge network
         # This makes it possible for containers to connect to each other by name
