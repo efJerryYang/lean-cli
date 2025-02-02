@@ -179,6 +179,8 @@ class DockerManager:
         self._logger.debug(kwargs)
 
         docker_client = self._get_docker_client()
+        # TODO: this does not work
+        # kwargs["environment"] = kwargs.get("environment", {"TEST_ENV": "1"})
         container = docker_client.containers.run(str(image), None, **kwargs)
 
         if verify_stability:
