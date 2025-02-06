@@ -195,7 +195,7 @@ def research(project: Path,
     run_options["commands"].append(
         'echo "#header-container { display: none !important; }" > ~/.ipython/profile_default/static/custom/custom.css')
 
-    run_options["commands"].append(f"echo 'Assembly.LoadFrom(\"{project.name}\");' >> /Lean/Launcher/bin/Debug/Initialize.csx")
+    run_options["commands"].append(f"echo 'Assembly.LoadFrom(\"{LEAN_ROOT_PATH}/{project.name}.dll\");' >> {LEAN_ROOT_PATH}/Initialize.csx")
 
     run_options["environment"] = { "RESEARCH_PROJECT_NAME": project.name }
 
